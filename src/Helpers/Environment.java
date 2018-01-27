@@ -1,5 +1,6 @@
 package Helpers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,19 +8,17 @@ import java.util.regex.Pattern;
 
 public class Environment {
     private State state = new State();
-    public Environment() {}
+    private Point2D home;
+    private int sizeX;
+    private int sizeY;
+    private ArrayList<Point2D> obstacleList;
+    public Environment()
+    {
+        obstacleList = new ArrayList<>();
+    }
 
     public State init(Collection<String> percepts)
     {
-        /*
-			Possible percepts are:
-			- "(SIZE x y)" denoting the size of the environment, where x,y are integers
-			- "(HOME x y)" with x,y >= 1 denoting the initial position of the robot
-			- "(ORIENTATION o)" with o in {"NORTH", "SOUTH", "EAST", "WEST"} denoting the initial orientation of the robot
-			- "(AT o x y)" with o being "DIRT" or "OBSTACLE" denoting the position of a dirt or an obstacle
-			Moving north increases the y coordinate and moving east increases the x coordinate of the robots position.
-			The robot is turned off initially, so don't forget to turn it on.
-		*/
         Pattern perceptNamePattern = Pattern.compile("\\(\\s*([^\\s]+).*");
         for (String percept:percepts) {
             Matcher perceptNameMatcher = perceptNamePattern.matcher(percept);
@@ -29,16 +28,16 @@ public class Environment {
                     Matcher m = Pattern.compile("\\(\\s*HOME\\s+([0-9]+)\\s+([0-9]+)\\s*\\)").matcher(percept);
                     if (m.matches()) {
                         System.out.println("robot is at " + m.group(1) + "," + m.group(2));
-                        state.setAgentX(Integer.parseInt(m.group(1)));
-                        state.setAgentY(Integer.parseInt(m.group(2)));
+                        this.home = new Point2D(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
+                        state.setAgentLocation(home);
                     }
                 }
                 else if (perceptName.equals("SIZE")) {
                     Matcher m = Pattern.compile("\\(\\s*SIZE\\s+([0-9]+)\\s+([0-9]+)\\s*\\)").matcher(percept);
                     if (m.matches()) {
                         System.out.println("size is " + m.group(1) + "," + m.group(2));
-                        state.setSizeX(Integer.parseInt(m.group(1)));
-                        state.setSizeY(Integer.parseInt(m.group(2)));
+                        this.sizeX = Integer.parseInt(m.group(1));
+                        this.sizeY = Integer.parseInt(m.group(2));
                     }
                 }
                 else if (perceptName.equals("ORIENTATION")) {
@@ -70,5 +69,21 @@ public class Environment {
             }
         }
         return state;
+    }
+
+    public ArrayList<Point2D> getObstacleList() {
+        return obstacleList;
+    }
+
+    public int getSizeX() {
+        return sizeX;
+    }
+
+    public int getSizeY() {
+        return sizeY;
+    }
+
+    public Point2D getHome() {
+        return home;
     }
 }
