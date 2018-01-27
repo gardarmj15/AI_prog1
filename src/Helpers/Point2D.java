@@ -18,4 +18,24 @@ public class Point2D
     public int getX() {
         return x;
     }
+
+    public void incrementX()
+    {
+        x++;
+    }
+
+    public void incrementY()
+    {
+        y++;
+    }
+
+    public void decrementX()
+    {
+        x--;
+    }
+
+    public void decrementY()
+    {
+        y--;
+    }
 }

@@ -57,7 +57,7 @@ public class Environment {
                         }
                         else if (m.group(1).matches("OBSTACLE")) {
                             System.out.println("OBSTACLE at " + m.group(2) + "," + m.group(3));
-                            state.addToDirtList(new Point2D(Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3))));
+                            obstacleList.add(new Point2D(Integer.parseInt(m.group(2)), Integer.parseInt(m.group(3))));
                         }
                     }
                 }
