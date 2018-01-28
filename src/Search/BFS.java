@@ -16,6 +16,7 @@ public class BFS
     private ArrayList<String> allActions;
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
+    private HashSet<State> visited;
 
     public BFS(State initialState, Environment environment)
     {
@@ -26,6 +27,7 @@ public class BFS
         this.possibleActions = new ArrayList<>();
         this.actionList = new ArrayList<>();
         this.allActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
+        this.visited = new HashSet<>();
     }
 
     public ArrayList<String> startSearch() {
@@ -40,18 +42,20 @@ public class BFS
         while(Frontier.size() > 0)
         {
             currNode = Frontier.poll();
-            possibleActions = possibleActions(currNode.getState());
-            for(String act : possibleActions)
-            {
-                BFSNode newNode = createNewState(act, currNode);
-                if(!isGoal(newNode))
+            if(visited.add(currNode.getState())){
+                possibleActions = possibleActions(currNode.getState());
+                for(String act : possibleActions)
                 {
-                    Frontier.add(newNode);
-                }
-                else
-                {
-                    getAllActionList(newNode);
-                    return;
+                    BFSNode newNode = createNewState(act, currNode);
+                    if(!isGoal(newNode))
+                    {
+                        Frontier.add(newNode);
+                    }
+                    else
+                    {
+                        getAllActionList(newNode);
+                        return;
+                    }
                 }
             }
         }
@@ -60,7 +64,9 @@ public class BFS
     private boolean isGoal(BFSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() == 4)
+        if(node.getState().getDirtList().size() == 0
+                && node.getState().getAgentLocation().getX() == environment.getHome().getX()
+                && node.getState().getAgentLocation().getY() == environment.getHome().getY())
         //if(node.getState().getAgentLocation().getX() == 5 && node.getState().getAgentLocation().getY() == 1 && node.getState().getDirtList().size() == 4)
         {
             return true;
@@ -114,7 +120,6 @@ public class BFS
 
     public void getAllActionList(BFSNode goalNode)
     {
-        System.out.println("WE WON");
         while(goalNode.getParentNode() != null)
         {
             System.out.println();

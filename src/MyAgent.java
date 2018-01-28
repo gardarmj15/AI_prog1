@@ -24,11 +24,10 @@ public class MyAgent implements Agent
 		actionList = new ArrayList<>();
 		actionList = bfsSearch.startSearch();
         actionList.add("TURN_ON");
-        for(String i : actionList)
+        /*for(String i : actionList)
         {
             System.out.println(i);
-        }
-		System.out.println("INIT");
+        }*/
     }
 
     public String nextAction(Collection<String> percepts) {
