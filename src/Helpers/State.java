@@ -15,6 +15,13 @@ public class State
         dirtList = new ArrayList<>();
     }
 
+    public State(State state)
+    {
+        this.agentLocation = state.agentLocation;
+        this.orientation = state.orientation;
+        this.dirtList = state.dirtList;
+    }
+
     public void setAgentLocation(Point2D agentLocation) {
         this.agentLocation = agentLocation;
     }
@@ -55,26 +62,26 @@ public class State
 
     public void changeDirection(String action)
     {
-        if(action == "TURN_LEFT")
+        if(action.equals("TURN_LEFT"))
         {
-            if(orientation == "NORTH")
+            if(orientation.equals("NORTH"))
                 orientation = "WEST";
-            if(orientation == "WEST")
+            else if(orientation.equals("WEST"))
                 orientation = "SOUTH";
-            if(orientation == "SOUTH")
+            else if(orientation.equals("SOUTH"))
                 orientation = "EAST";
-            if(orientation == "EAST")
+            else if(orientation.equals("EAST"))
                 orientation = "NORTH";
         }
-        if(action == "TURN_RIGHT")
+        if(action.equals("TURN_RIGHT"))
         {
-            if(orientation == "NORTH")
+            if(orientation.equals("NORTH"))
                 orientation = "EAST";
-            if(orientation == "EAST")
+            else if(orientation.equals("EAST"))
                 orientation = "SOUTH";
-            if(orientation == "SOUTH")
+            else if(orientation.equals("SOUTH"))
                 orientation = "WEST";
-            if(orientation == "WEST")
+            else if(orientation.equals("WEST"))
                 orientation = "NORTH";
         }
     }
@@ -105,13 +112,13 @@ public class State
 
     public void moveAgent()
     {
-        if(orientation == "NORTH")
+        if(orientation.equals("NORTH"))
             agentLocation.incrementY();
-        if(orientation == "EAST")
-            agentLocation.decrementX();
-        if(orientation == "SOUTH")
-            agentLocation.decrementX();
-        if(orientation == "WEST")
+        if(orientation.equals("EAST"))
             agentLocation.incrementX();
+        if(orientation.equals("SOUTH"))
+            agentLocation.decrementX();
+        if(orientation.equals("WEST"))
+            agentLocation.decrementX();
     }
 }

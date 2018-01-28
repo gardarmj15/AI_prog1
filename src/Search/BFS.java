@@ -41,6 +41,11 @@ public class BFS
         isGoal(currNode);
         while(Frontier.size() > 0)
         {
+            System.out.println("Size: " + Frontier.size());
+            if(Frontier.size() > 10)
+            {
+                return;
+            }
             currNode = Frontier.poll();
             possibleActions = possibleActions(currNode.getState());
             for(String act : possibleActions)
@@ -49,6 +54,10 @@ public class BFS
                 if(!isGoal(newNode))
                 {
                     Frontier.add(newNode);
+                    System.out.println(newNode.getActions());
+                    System.out.println(newNode.getState().getOrientation());
+                    System.out.println(newNode.getState().getAgentLocation().getX() + "," + newNode.getState().getAgentLocation().getY());
+                    System.out.println("Node end");
                 }
                 else
                 {
@@ -62,7 +71,7 @@ public class BFS
     private boolean isGoal(BFSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() < 5)
+        if(node.getState().getDirtList().size() == 4)
         {
             return true;
         }
@@ -71,7 +80,7 @@ public class BFS
 
     private BFSNode createNewState(String action)
     {
-        State newState = currNode.getState();
+        State newState = new State(currNode.getState());
         if(action.equals("SUCK"))
         {
             newState.suckUpDirt();
@@ -93,7 +102,7 @@ public class BFS
         else if(action.equals("GO"))
         {
             newState.moveAgent();
-            //System.out.println("GOING FORWARD");
+            //System.out.println(newState.getAgentLocation().getX() + "," + newState.getAgentLocation().getY());
             return new BFSNode(currNode, newState, "GO");
         }
         else
