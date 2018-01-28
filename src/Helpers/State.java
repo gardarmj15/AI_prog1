@@ -48,15 +48,25 @@ public class State
 
     public boolean containsDirt()
     {
-        if(dirtList.contains(agentLocation))
+        for(Point2D d : dirtList)
         {
-            return true;
+            if(d.getX() == agentLocation.getX() && d.getY() == agentLocation.getY())
+            {
+                return true;
+            }
         }
         return false;
     }
 
     public void suckUpDirt()
     {
+        for(Point2D d : dirtList)
+        {
+            if(d.getX() == agentLocation.getX() && d.getY() == agentLocation.getY())
+            {
+                dirtList.remove(d);
+            }
+        }
         dirtList.remove(agentLocation);
     }
 
@@ -88,11 +98,8 @@ public class State
 
     public boolean isFacingObstacle(ArrayList<Point2D> obstacle)
     {
-        //System.out.println(agentLocation.getX() + "," + agentLocation.getY());
         for(Point2D o : obstacle)
         {
-            //System.out.println(orientation);
-            //System.out.println(o.getX() + "," + o.getY());
             if(o.getY() == agentLocation.getY() + 1 && orientation.equals("NORTH") && o.getX() == agentLocation.getX())
             {
                 return true;
@@ -110,9 +117,6 @@ public class State
                 return true;
             }
         }
-        /*System.out.println("Should move");
-        System.out.println("My loc    " + agentLocation.getX() + "," + agentLocation.getY());
-        System.out.println("orient    " + orientation);*/
         return false;
     }
 

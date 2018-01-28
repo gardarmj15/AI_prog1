@@ -41,8 +41,7 @@ public class BFS
         isGoal(currNode);
         while(Frontier.size() > 0)
         {
-            //System.out.println("Size: " + Frontier.size());
-            if(currNode.getState().getDirtList().size() == 4)
+            if(currNode.getState().getDirtList().size() == 3)
             {
                 System.out.println("helloman");
                 return;
@@ -55,11 +54,6 @@ public class BFS
                 if(!isGoal(newNode))
                 {
                     Frontier.add(newNode);
-                    /*System.out.println();
-                    System.out.println(newNode.getActions());
-                    System.out.println(newNode.getState().getOrientation());
-                    System.out.println(newNode.getState().getAgentLocation().getX() + "," + newNode.getState().getAgentLocation().getY());
-                    System.out.println("Node end");*/
                 }
                 else
                 {
@@ -73,7 +67,7 @@ public class BFS
     private boolean isGoal(BFSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() == 4)
+        if(node.getState().getDirtList().size() == 0)
         {
             return true;
         }
@@ -86,26 +80,21 @@ public class BFS
         if(action.equals("SUCK"))
         {
             newState.suckUpDirt();
-            //System.out.println("SUCKING DIRT");
             return new BFSNode(currNode, newState, "SUCK");
         }
         else if(action.equals("TURN_LEFT"))
         {
             newState.changeDirection(action);
-            //System.out.println("TURNING LEFT");
             return new BFSNode(currNode, newState, "TURN_LEFT");
         }
         else if(action.equals("TURN_RIGHT"))
         {
             newState.changeDirection(action);
-            //System.out.println("TURNING RIGHT");
             return new BFSNode(currNode, newState, "TURN_RIGHT");
         }
         else if(action.equals("GO"))
         {
             newState.moveAgent();
-            System.out.println(newState.getAgentLocation().getX() + "," + newState.getAgentLocation().getY());
-            //System.out.println(newState.getAgentLocation().getX() + "," + newState.getAgentLocation().getY());
             return new BFSNode(currNode, newState, "GO");
         }
         else
@@ -123,7 +112,6 @@ public class BFS
         }
         if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state))
         {
-            System.out.println("Going");
             list.add("GO");
         }
         return list;
