@@ -42,14 +42,13 @@ public class BFS
         while(Frontier.size() > 0)
         {
             //System.out.println("Size: " + Frontier.size());
-            if(Frontier.size() > 20)
+            if(currNode.getState().getDirtList().size() == 4)
             {
+                System.out.println("helloman");
                 return;
             }
             currNode = Frontier.poll();
             possibleActions = possibleActions(currNode.getState());
-            System.out.println("Size: " + possibleActions.size());
-            int i = 0;
             for(String act : possibleActions)
             {
                 BFSNode newNode = createNewState(act);
@@ -124,6 +123,7 @@ public class BFS
         }
         if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state))
         {
+            System.out.println("Going");
             list.add("GO");
         }
         return list;

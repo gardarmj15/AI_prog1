@@ -93,26 +93,26 @@ public class State
         {
             //System.out.println(orientation);
             //System.out.println(o.getX() + "," + o.getY());
-            if(o.getY() == agentLocation.getY() + 1 && orientation.equals("NORTH"))
+            if(o.getY() == agentLocation.getY() + 1 && orientation.equals("NORTH") && o.getX() == agentLocation.getX())
             {
                 return true;
             }
-            if(o.getY() == agentLocation.getY() - 1 && orientation.equals("SOUTH"))
+            if(o.getY() == agentLocation.getY() - 1 && orientation.equals("SOUTH") && o.getX() == agentLocation.getX())
             {
                 return true;
             }
-            if(o.getX() == agentLocation.getX() + 1 && orientation.equals("EAST"))
+            if(o.getX() == agentLocation.getX() + 1 && orientation.equals("EAST") && o.getY() == agentLocation.getY())
             {
                 return true;
             }
-            if(o.getX() == agentLocation.getX() - 1 && orientation.equals("WEST"))
+            if(o.getX() == agentLocation.getX() - 1 && orientation.equals("WEST") && o.getY() == agentLocation.getY())
             {
                 return true;
             }
         }
-        System.out.println("Should move");
-        System.out.println(agentLocation.getX() + "," + agentLocation.getY());
-        System.out.println(orientation);
+        /*System.out.println("Should move");
+        System.out.println("My loc    " + agentLocation.getX() + "," + agentLocation.getY());
+        System.out.println("orient    " + orientation);*/
         return false;
     }
 
