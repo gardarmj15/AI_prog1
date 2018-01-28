@@ -38,4 +38,9 @@ public class Point2D
     {
         y--;
     }
+
+    /*public Point2D clone()
+    {
+        Point2D clonePoint = new Point2D(this.getX(), this.getY());
+    }*/
 }

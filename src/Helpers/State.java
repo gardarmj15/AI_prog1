@@ -17,9 +17,10 @@ public class State
 
     public State(State state)
     {
-        this.agentLocation = state.agentLocation;
+        this.agentLocation = new Point2D(state.getAgentLocation().getX(), state.getAgentLocation().getY());
         this.orientation = state.orientation;
-        this.dirtList = state.dirtList;
+        this.dirtList = new ArrayList<>();
+        this.dirtList.addAll(state.dirtList);
     }
 
     public void setAgentLocation(Point2D agentLocation) {
@@ -131,5 +132,38 @@ public class State
             agentLocation.decrementY();
         if(orientation.equals("WEST"))
             agentLocation.decrementX();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) return true;
+        if (!(o instanceof State)) {
+            return false;
+        }
+
+        State state = (State) o;
+
+        return state.orientation.equals(orientation) &&
+                state.agentLocation.getY() == this.agentLocation.getY() &&
+                state.agentLocation.getX() == this.agentLocation.getX() &&
+                state.getDirtList().equals(this.dirtList);
+    }
+
+    @Override
+    public int hashCode(){
+        int result = 18;
+        int c = 0;
+
+        c += agentLocation.getX();
+        c += agentLocation.getY();
+        c += orientation.hashCode();
+        for (Point2D p: dirtList) {
+            c += p.getY();
+            c += p.getX();
+        }
+
+        result = 37 * result + c;
+        return result;
     }
 }

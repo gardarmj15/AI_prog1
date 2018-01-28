@@ -20,19 +20,28 @@ public class MyAgent implements Agent
 
     public void init(Collection<String> percepts) {
 		state = env.init(percepts);
-		dfsSearch = new DFS(state, env);
+		bfsSearch = new BFS(state, env);
 		actionList = new ArrayList<>();
-		actionList = dfsSearch.startSearch();
+		actionList = bfsSearch.startSearch();
+        actionList.add("TURN_ON");
+        for(String i : actionList)
+        {
+            System.out.println(i);
+        }
 		System.out.println("INIT");
     }
 
     public String nextAction(Collection<String> percepts) {
-        System.out.println("next");
         System.out.print("perceiving:");
         for (String percept : percepts) {
             System.out.print("'" + percept + "', ");
         }
-        System.out.println("");
-        return Actions.TURN_RIGHT;
+        while(actionList.size() > 0)
+        {
+            String nextAction = actionList.get(actionList.size() - 1);
+            actionList.remove(actionList.size() - 1);
+            return nextAction;
+        }
+        return "TURN_OFF";
     }
 }

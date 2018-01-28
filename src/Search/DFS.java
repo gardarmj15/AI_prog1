@@ -39,11 +39,6 @@ public class DFS
         isGoal(currNode);
         while(Frontier.size() > 0)
         {
-            if(currNode.getState().getDirtList().size() == 3)
-            {
-                System.out.println("helloman");
-                return;
-            }
             currNode = Frontier.pop();
             possibleActions = possibleActions(currNode.getState());
             for(String act : possibleActions)
@@ -65,7 +60,7 @@ public class DFS
     private boolean isGoal(BFSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() == 0)
+        if(node.getState().getDirtList().size() == 5)
         {
             return true;
         }

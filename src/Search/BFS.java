@@ -39,16 +39,11 @@ public class BFS
         isGoal(currNode);
         while(Frontier.size() > 0)
         {
-            if(currNode.getState().getDirtList().size() == 3)
-            {
-                System.out.println("helloman");
-                return;
-            }
             currNode = Frontier.poll();
             possibleActions = possibleActions(currNode.getState());
             for(String act : possibleActions)
             {
-                BFSNode newNode = createNewState(act);
+                BFSNode newNode = createNewState(act, currNode);
                 if(!isGoal(newNode))
                 {
                     Frontier.add(newNode);
@@ -65,37 +60,39 @@ public class BFS
     private boolean isGoal(BFSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() == 0)
+        if(node.getState().getDirtList().size() == 4)
+        //if(node.getState().getAgentLocation().getX() == 5 && node.getState().getAgentLocation().getY() == 1 && node.getState().getDirtList().size() == 4)
         {
             return true;
         }
         return false;
     }
 
-    private BFSNode createNewState(String action)
+    private BFSNode createNewState(String action, BFSNode parentNode)
     {
-        State newState = new State(currNode.getState());
+        State newState = new State(parentNode.getState());
         if(action.equals("SUCK"))
         {
             newState.suckUpDirt();
-            return new BFSNode(currNode, newState, "SUCK");
+            return new BFSNode(parentNode, newState, "SUCK");
         }
         else if(action.equals("TURN_LEFT"))
         {
             newState.changeDirection(action);
-            return new BFSNode(currNode, newState, "TURN_LEFT");
+            return new BFSNode(parentNode, newState, "TURN_LEFT");
         }
         else if(action.equals("TURN_RIGHT"))
         {
             newState.changeDirection(action);
-            return new BFSNode(currNode, newState, "TURN_RIGHT");
+            return new BFSNode(parentNode, newState, "TURN_RIGHT");
         }
         else if(action.equals("GO"))
         {
             newState.moveAgent();
-            return new BFSNode(currNode, newState, "GO");
+            return new BFSNode(parentNode, newState, "GO");
         }
         else
+            System.out.println("ADD go node");
             return null;
     }
 
@@ -120,6 +117,9 @@ public class BFS
         System.out.println("WE WON");
         while(goalNode.getParentNode() != null)
         {
+            System.out.println();
+            System.out.println(goalNode.getState().getOrientation());
+            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());
             actionList.add(goalNode.getActions());
             System.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
