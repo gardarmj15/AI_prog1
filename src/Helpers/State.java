@@ -65,6 +65,7 @@ public class State
             if(d.getX() == agentLocation.getX() && d.getY() == agentLocation.getY())
             {
                 dirtList.remove(d);
+                return;
             }
         }
         dirtList.remove(agentLocation);

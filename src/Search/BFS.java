@@ -2,7 +2,6 @@ package Search;
 
 import Helpers.Actions;
 import Helpers.Environment;
-import Helpers.Point2D;
 import Helpers.State;
 import Nodes.BFSNode;
 
@@ -12,7 +11,6 @@ public class BFS
 {
     private State initialState;
     private Environment environment;
-    private Actions actions;
     private Queue<BFSNode> Frontier;
     private BFSNode currNode;
     private ArrayList<String> allActions;
