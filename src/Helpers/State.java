@@ -85,22 +85,18 @@ public class State
         {
             if(o.getY() == agentLocation.getY() + 1 && orientation.equals("NORTH"))
             {
-                System.out.println("NORTH");
                 return true;
             }
             if(o.getY() == agentLocation.getY() - 1 && orientation.equals("SOUTH"))
             {
-                System.out.println("SOUTH");
                 return true;
             }
             if(o.getX() == agentLocation.getX() + 1 && orientation.equals("EAST"))
             {
-                System.out.println("EAST");
                 return true;
             }
             if(o.getX() == agentLocation.getX() - 1 && orientation.equals("WEST"))
             {
-                System.out.println("WEST");
                 return true;
             }
         }
