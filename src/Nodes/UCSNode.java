@@ -2,6 +2,8 @@ package Nodes;
 
 import Helpers.State;
 
+import java.util.Comparator;
+
 public class UCSNode
 {
     private UCSNode parentNode;
@@ -14,7 +16,7 @@ public class UCSNode
         this.parentNode = parentNode;
         this.state = state;
         this.actions = actions;
-        this.pathCost = pathCost;
+        this.pathCost = pathCost + 1;
     }
 
     public String getActions() {
@@ -27,5 +29,9 @@ public class UCSNode
 
     public State getState() {
         return state;
+    }
+
+    public int getPathCost() {
+        return pathCost;
     }
 }

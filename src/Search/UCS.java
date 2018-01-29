@@ -2,33 +2,32 @@ package Search;
 
 import Helpers.Actions;
 import Helpers.Environment;
+import Helpers.PathCostComparator;
 import Helpers.State;
-import Nodes.BFSNode;
+import Nodes.UCSNode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class UCS
 {
+    Comparator<UCSNode> comp = new PathCostComparator();
     private State initialState;
     private Environment environment;
-    private Queue<BFSNode> Frontier;
-    private BFSNode currNode;
-    private ArrayList<String> allActions;
+    private Queue<UCSNode> Frontier;
+    private UCSNode currNode;
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
+    private HashSet<State> visited;
 
     public UCS(State initialState, Environment environment)
     {
         this.initialState = initialState;
         this.environment = environment;
-        this.Frontier = new LinkedList<>();
-        this.Frontier.add(new BFSNode(null, initialState, ""));
-        this.possibleActions = new ArrayList<>();
+        this.Frontier = new PriorityQueue<>(1, comp);
+        this.Frontier.add(new UCSNode(null, initialState, "", 0));
+        this.possibleActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
         this.actionList = new ArrayList<>();
-        this.allActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
+        this.visited = new HashSet<>();
     }
 
     public ArrayList<String> startSearch() {
@@ -43,27 +42,32 @@ public class UCS
         while(Frontier.size() > 0)
         {
             currNode = Frontier.poll();
-            possibleActions = possibleActions(currNode.getState());
+            possibleActions(currNode.getState(), possibleActions);
             for(String act : possibleActions)
             {
-                BFSNode newNode = createNewState(act, currNode);
-                if(!isGoal(newNode))
+                UCSNode newNode = createNewState(act, currNode);
+                if(newNode != null)
                 {
-                    Frontier.add(newNode);
-                }
-                else
-                {
-                    getAllActionList(newNode);
-                    return;
+                    if(!isGoal(newNode))
+                    {
+                        Frontier.add(newNode);
+                    }
+                    else
+                    {
+                        getAllActionList(newNode);
+                        return;
+                    }
                 }
             }
         }
     }
 
-    private boolean isGoal(BFSNode node)
+    private boolean isGoal(UCSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() == 4)
+        if(node.getState().getDirtList().size() == 0
+                && node.getState().getAgentLocation().getX() == environment.getHome().getX()
+                && node.getState().getAgentLocation().getY() == environment.getHome().getY())
         //if(node.getState().getAgentLocation().getX() == 5 && node.getState().getAgentLocation().getY() == 1 && node.getState().getDirtList().size() == 4)
         {
             return true;
@@ -71,60 +75,69 @@ public class UCS
         return false;
     }
 
-    private BFSNode createNewState(String action, BFSNode parentNode)
+    private UCSNode createNewState(String action, UCSNode parentNode)
     {
-        State newState = new State(parentNode.getState());
         if(action.equals("SUCK"))
         {
+            State newState = new State(parentNode.getState());
             newState.suckUpDirt();
-            return new BFSNode(parentNode, newState, "SUCK");
+            if(visited.add(newState)){
+                return new UCSNode(parentNode,new State(newState), "SUCK", parentNode.getPathCost());
+            }
+
         }
         else if(action.equals("TURN_LEFT"))
         {
+            State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            return new BFSNode(parentNode, newState, "TURN_LEFT");
+            if(visited.add(newState)){
+                return new UCSNode(parentNode, new State(newState), "TURN_LEFT", parentNode.getPathCost());
+            }
         }
         else if(action.equals("TURN_RIGHT"))
         {
+            State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            return new BFSNode(parentNode, newState, "TURN_RIGHT");
+            if(visited.add(newState))
+                return new UCSNode(parentNode, new State(newState), "TURN_RIGHT", parentNode.getPathCost());
         }
         else if(action.equals("GO"))
         {
+            State newState = new State(parentNode.getState());
             newState.moveAgent();
-            return new BFSNode(parentNode, newState, "GO");
+            if(visited.add(newState))
+                return new UCSNode(parentNode, new State(newState), "GO", parentNode.getPathCost());
         }
-        else
-            System.out.println("ADD go node");
         return null;
     }
 
-    private ArrayList<String> possibleActions(State state)
+    private void possibleActions(State state, ArrayList<String> list)
     {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("TURN_LEFT");
-        list.add("TURN_RIGHT");
-        if(state.containsDirt())
+        if(state.containsDirt() && !list.contains("SUCK"))
         {
             list.add("SUCK");
         }
-        if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state))
+        else if(!state.containsDirt() && list.contains("SUCK")){
+            list.remove("SUCK");
+        }
+        if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state) && !list.contains("GO"))
         {
             list.add("GO");
         }
-        return list;
+        else if ((state.isFacingObstacle(environment.getObstacleList()) || goingOutOfBounds(state)) && list.contains("GO")){
+            list.remove("GO");
+        }
     }
 
-    public void getAllActionList(BFSNode goalNode)
+    public void getAllActionList(UCSNode goalNode)
     {
-        System.out.println("WE WON");
         while(goalNode.getParentNode() != null)
         {
-            System.out.println();
+            /*System.out.println();
             System.out.println(goalNode.getState().getOrientation());
-            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());
+            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());*/
             actionList.add(goalNode.getActions());
-            System.out.println(goalNode.getActions());
+            //.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
         }
     }

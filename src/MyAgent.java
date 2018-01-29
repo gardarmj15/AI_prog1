@@ -4,6 +4,7 @@ import Helpers.Point2D;
 import Helpers.State;
 import Search.BFS;
 import Search.DFS;
+import Search.UCS;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,12 +17,14 @@ public class MyAgent implements Agent
     private Environment env = new Environment();
     private BFS bfsSearch;
     private DFS dfsSearch;
+    private UCS ucsSearch;
     private ArrayList<String> actionList;
 
     public void init(Collection<String> percepts) {
 		state = env.init(percepts);
 		//prepBFS();
-		prepDFS();
+		//prepDFS();
+        prepUCS();
         actionList.add("TURN_ON");
         /*for(String i : actionList)
         {
@@ -55,5 +58,12 @@ public class MyAgent implements Agent
         bfsSearch = new BFS(state, env);
         actionList = new ArrayList<>();
         actionList = bfsSearch.startSearch();
+    }
+
+    private void prepUCS()
+    {
+        ucsSearch = new UCS(state, env);
+        actionList = new ArrayList<>();
+        actionList = ucsSearch.startSearch();
     }
 }
