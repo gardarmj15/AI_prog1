@@ -152,21 +152,13 @@ public class UCS
     public boolean goingOutOfBounds(State state)
     {
         if(state.getAgentLocation().getX() == 1 && state.getOrientation().equals("WEST"))
-        {
             return true;
-        }
         if(state.getAgentLocation().getY() == 1 && state.getOrientation().equals("SOUTH"))
-        {
             return true;
-        }
         if(state.getAgentLocation().getX() == environment.getSizeX() && state.getOrientation().equals("EAST"))
-        {
             return true;
-        }
         if(state.getAgentLocation().getY() == environment.getSizeY() && state.getOrientation().equals("NORTH"))
-        {
             return true;
-        }
         return false;
     }
 }

@@ -1,5 +1,10 @@
 package Helpers;
 
+import com.sun.prism.image.Coords;
+import edu.princeton.cs.algs4.Edge;
+import edu.princeton.cs.algs4.EdgeWeightedGraph;
+import edu.princeton.cs.algs4.PrimMST;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +14,7 @@ public class State
     private Point2D agentLocation;
     private String orientation;
     private ArrayList<Point2D> dirtList;
+    private PrimMST mst;
 
     public State()
     {
@@ -52,9 +58,7 @@ public class State
         for(Point2D d : dirtList)
         {
             if(d.getX() == agentLocation.getX() && d.getY() == agentLocation.getY())
-            {
                 return true;
-            }
         }
         return false;
     }
@@ -103,21 +107,13 @@ public class State
         for(Point2D o : obstacle)
         {
             if(o.getY() == agentLocation.getY() + 1 && orientation.equals("NORTH") && o.getX() == agentLocation.getX())
-            {
                 return true;
-            }
             if(o.getY() == agentLocation.getY() - 1 && orientation.equals("SOUTH") && o.getX() == agentLocation.getX())
-            {
                 return true;
-            }
             if(o.getX() == agentLocation.getX() + 1 && orientation.equals("EAST") && o.getY() == agentLocation.getY())
-            {
                 return true;
-            }
             if(o.getX() == agentLocation.getX() - 1 && orientation.equals("WEST") && o.getY() == agentLocation.getY())
-            {
                 return true;
-            }
         }
         return false;
     }
@@ -165,5 +161,22 @@ public class State
 
         result = 37 * result + c;
         return result;
+    }
+
+    public int findHeuristic()
+    {
+        EdgeWeightedGraph g = new EdgeWeightedGraph(dirtList.size() + 1);
+        for(int i = 0; i< dirtList.size(); i++)
+        {
+            for(int j = i + 1; j < dirtList.size(); j++)
+            {
+                Point2D A = dirtList.get(i);
+                Point2D A1 = dirtList.get(j);
+                g.addEdge(new Edge(i,j, A.manhattanDistance(A1)));
+            }
+            g.addEdge(new Edge(i, dirtList.size(), agentLocation.manhattanDistance(dirtList.get(i))));
+        }
+        PrimMST h = new PrimMST(g);
+        return (int)h.weight();
     }
 }

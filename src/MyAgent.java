@@ -2,6 +2,7 @@ import Helpers.Actions;
 import Helpers.Environment;
 import Helpers.Point2D;
 import Helpers.State;
+import Search.AStar;
 import Search.BFS;
 import Search.DFS;
 import Search.UCS;
@@ -18,18 +19,16 @@ public class MyAgent implements Agent
     private BFS bfsSearch;
     private DFS dfsSearch;
     private UCS ucsSearch;
+    private AStar aStarSearch;
     private ArrayList<String> actionList;
 
     public void init(Collection<String> percepts) {
 		state = env.init(percepts);
 		//prepBFS();
 		//prepDFS();
-        prepUCS();
+        //prepUCS();
+        prepAStar();
         actionList.add("TURN_ON");
-        /*for(String i : actionList)
-        {
-            System.out.println(i);
-        }*/
     }
 
     public String nextAction(Collection<String> percepts) {
@@ -65,5 +64,12 @@ public class MyAgent implements Agent
         ucsSearch = new UCS(state, env);
         actionList = new ArrayList<>();
         actionList = ucsSearch.startSearch();
+    }
+
+    private void prepAStar()
+    {
+        aStarSearch = new AStar(state, env);
+        actionList = new ArrayList<>();
+        actionList = aStarSearch.startSearch();
     }
 }

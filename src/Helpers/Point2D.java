@@ -39,8 +39,10 @@ public class Point2D
         y--;
     }
 
-    /*public Point2D clone()
+    public double manhattanDistance(Point2D A1)
     {
-        Point2D clonePoint = new Point2D(this.getX(), this.getY());
-    }*/
+        int dx = Math.abs(x - A1.x);
+        int dy = Math.abs(y - A1.y);
+        return dx+dy;
+    }
 }
