@@ -18,6 +18,8 @@ public class DFS
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
     private HashSet<State> visited;
+    private int nodesExpanded = 0;
+    private int maxFrontier = 0;
 
     public DFS(State initialState, Environment environment)
     {
@@ -26,6 +28,8 @@ public class DFS
         this.Frontier = new Stack<>();
         this.Frontier.add(new DFSNode(null, initialState, ""));
         this.possibleActions = new ArrayList<>();
+        nodesExpanded++;
+        maxFrontier = Frontier.size();
         this.actionList = new ArrayList<>();
         this.allActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
         this.visited = new HashSet<>();
@@ -52,6 +56,8 @@ public class DFS
                     if(!isGoal(newNode))
                     {
                         Frontier.add(newNode);
+                        if(Frontier.size() > maxFrontier)
+                            maxFrontier = Frontier.size();
                     }
                     else
                     {
@@ -82,6 +88,7 @@ public class DFS
             State newState = new State(parentNode.getState());
             newState.suckUpDirt();
             if(visited.add(newState)){
+                nodesExpanded++;
                 return new DFSNode(parentNode,new State(newState), "SUCK");
             }
         }
@@ -90,6 +97,7 @@ public class DFS
             State newState = new State(parentNode.getState());
             newState.changeDirection(action);
             if(visited.add(newState)){
+                nodesExpanded++;
                 return new DFSNode(parentNode, new State(newState), "TURN_LEFT");
             }
         }
@@ -97,15 +105,19 @@ public class DFS
         {
             State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            if(visited.add(newState))
+            if(visited.add(newState)) {
+                nodesExpanded++;
                 return new DFSNode(parentNode, new State(newState), "TURN_RIGHT");
+            }
         }
         else if(action.equals("GO"))
         {
             State newState = new State(parentNode.getState());
             newState.moveAgent();
-            if(visited.add(newState))
+            if(visited.add(newState)) {
+                nodesExpanded++;
                 return new DFSNode(parentNode, new State(newState), "GO");
+            }
         }
         return null;
     }
@@ -131,13 +143,11 @@ public class DFS
         System.out.println("WE WON");
         while(goalNode.getParentNode() != null)
         {
-            System.out.println();
-            System.out.println(goalNode.getState().getOrientation());
-            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());
             actionList.add(goalNode.getActions());
-            System.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
         }
+        System.out.println("Nodes Expanded: " + nodesExpanded);
+        System.out.println("Frontier size: " + maxFrontier);
     }
 
     public boolean goingOutOfBounds(State state)

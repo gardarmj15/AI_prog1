@@ -16,6 +16,8 @@ public class BFS
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
     private HashSet<State> visited;
+    private int nodesExpanded = 0;
+    private int maxFrontier = 0;
 
     public BFS(State initialState, Environment environment)
     {
@@ -23,6 +25,8 @@ public class BFS
         this.environment = environment;
         this.Frontier = new LinkedList<>();
         this.Frontier.add(new BFSNode(null, initialState, ""));
+        nodesExpanded++;
+        maxFrontier = Frontier.size();
         this.possibleActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
         this.actionList = new ArrayList<>();
         this.visited = new HashSet<>();
@@ -49,6 +53,8 @@ public class BFS
                     if(!isGoal(newNode))
                     {
                         Frontier.add(newNode);
+                        if(Frontier.size() > maxFrontier)
+                            maxFrontier = Frontier.size();
                     }
                     else
                     {
@@ -62,11 +68,9 @@ public class BFS
 
     private boolean isGoal(BFSNode node)
     {
-        //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
         if(node.getState().getDirtList().size() == 0
                 && node.getState().getAgentLocation().getX() == environment.getHome().getX()
                 && node.getState().getAgentLocation().getY() == environment.getHome().getY())
-        //if(node.getState().getAgentLocation().getX() == 5 && node.getState().getAgentLocation().getY() == 1 && node.getState().getDirtList().size() == 4)
         {
             return true;
         }
@@ -80,6 +84,7 @@ public class BFS
             State newState = new State(parentNode.getState());
             newState.suckUpDirt();
             if(visited.add(newState)){
+                nodesExpanded++;
                 return new BFSNode(parentNode,new State(newState), "SUCK");
             }
 
@@ -89,6 +94,7 @@ public class BFS
             State newState = new State(parentNode.getState());
             newState.changeDirection(action);
             if(visited.add(newState)){
+                nodesExpanded++;
                 return new BFSNode(parentNode, new State(newState), "TURN_LEFT");
             }
         }
@@ -96,15 +102,19 @@ public class BFS
         {
             State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            if(visited.add(newState))
+            if(visited.add(newState)) {
+                nodesExpanded++;
                 return new BFSNode(parentNode, new State(newState), "TURN_RIGHT");
+            }
         }
         else if(action.equals("GO"))
         {
             State newState = new State(parentNode.getState());
             newState.moveAgent();
-            if(visited.add(newState))
+            if(visited.add(newState)) {
+                nodesExpanded++;
                 return new BFSNode(parentNode, new State(newState), "GO");
+            }
         }
         return null;
     }
@@ -112,32 +122,25 @@ public class BFS
     private void possibleActions(State state, ArrayList<String> list)
     {
         if(state.containsDirt() && !list.contains("SUCK"))
-        {
             list.add("SUCK");
-        }
-        else if(!state.containsDirt() && list.contains("SUCK")){
+        else if(!state.containsDirt() && list.contains("SUCK"))
             list.remove("SUCK");
-        }
         if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state) && !list.contains("GO"))
-        {
             list.add("GO");
-        }
-        else if ((state.isFacingObstacle(environment.getObstacleList()) || goingOutOfBounds(state)) && list.contains("GO")){
+        else if ((state.isFacingObstacle(environment.getObstacleList()) || goingOutOfBounds(state)) && list.contains("GO"))
             list.remove("GO");
-        }
+
     }
 
     public void getAllActionList(BFSNode goalNode)
     {
         while(goalNode.getParentNode() != null)
         {
-            /*System.out.println();
-            System.out.println(goalNode.getState().getOrientation());
-            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());*/
             actionList.add(goalNode.getActions());
-            //.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
         }
+        System.out.println("Nodes Expanded: " + nodesExpanded);
+        System.out.println("Frontier size: " + maxFrontier);
     }
 
     public boolean goingOutOfBounds(State state)

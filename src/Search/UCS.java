@@ -18,6 +18,8 @@ public class UCS
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
     private HashSet<State> visited;
+    private int nodesExpanded = 0;
+    private int maxFrontier = 0;
 
     public UCS(State initialState, Environment environment)
     {
@@ -28,6 +30,8 @@ public class UCS
         this.possibleActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
         this.actionList = new ArrayList<>();
         this.visited = new HashSet<>();
+        nodesExpanded++;
+        maxFrontier = Frontier.size();
     }
 
     public ArrayList<String> startSearch() {
@@ -51,6 +55,8 @@ public class UCS
                     if(!isGoal(newNode))
                     {
                         Frontier.add(newNode);
+                        if(Frontier.size() > maxFrontier)
+                            maxFrontier = Frontier.size();
                     }
                     else
                     {
@@ -82,6 +88,7 @@ public class UCS
             State newState = new State(parentNode.getState());
             newState.suckUpDirt();
             if(visited.add(newState)){
+                nodesExpanded++;
                 return new UCSNode(parentNode,new State(newState), "SUCK", parentNode.getPathCost());
             }
 
@@ -91,6 +98,7 @@ public class UCS
             State newState = new State(parentNode.getState());
             newState.changeDirection(action);
             if(visited.add(newState)){
+                nodesExpanded++;
                 return new UCSNode(parentNode, new State(newState), "TURN_LEFT", parentNode.getPathCost());
             }
         }
@@ -98,15 +106,19 @@ public class UCS
         {
             State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            if(visited.add(newState))
+            if(visited.add(newState)) {
+                nodesExpanded++;
                 return new UCSNode(parentNode, new State(newState), "TURN_RIGHT", parentNode.getPathCost());
+            }
         }
         else if(action.equals("GO"))
         {
             State newState = new State(parentNode.getState());
             newState.moveAgent();
-            if(visited.add(newState))
+            if(visited.add(newState)) {
+                nodesExpanded++;
                 return new UCSNode(parentNode, new State(newState), "GO", parentNode.getPathCost());
+            }
         }
         return null;
     }
@@ -133,13 +145,11 @@ public class UCS
     {
         while(goalNode.getParentNode() != null)
         {
-            /*System.out.println();
-            System.out.println(goalNode.getState().getOrientation());
-            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());*/
             actionList.add(goalNode.getActions());
-            //.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
         }
+        System.out.println("Nodes Expanded: " + nodesExpanded);
+        System.out.println("Frontier size: " + maxFrontier);
     }
 
     public boolean goingOutOfBounds(State state)
