@@ -46,23 +46,20 @@ public class UCS
         while(Frontier.size() > 0)
         {
             currNode = Frontier.poll();
+            if(isGoal(currNode))
+            {
+                getAllActionList(currNode);
+                return;
+            }
             possibleActions(currNode.getState(), possibleActions);
             for(String act : possibleActions)
             {
                 UCSNode newNode = createNewState(act, currNode);
                 if(newNode != null)
                 {
-                    if(!isGoal(newNode))
-                    {
-                        Frontier.add(newNode);
-                        if(Frontier.size() > maxFrontier)
-                            maxFrontier = Frontier.size();
-                    }
-                    else
-                    {
-                        getAllActionList(newNode);
-                        return;
-                    }
+                    Frontier.add(newNode);
+                    if(Frontier.size() > maxFrontier)
+                        maxFrontier = Frontier.size();
                 }
             }
         }
