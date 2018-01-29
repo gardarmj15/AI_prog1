@@ -21,8 +21,10 @@ public class MyAgent implements Agent
     public void init(Collection<String> percepts) {
 		state = env.init(percepts);
 		bfsSearch = new BFS(state, env);
+        //dfsSearch = new DFS(state, env);
 		actionList = new ArrayList<>();
 		actionList = bfsSearch.startSearch();
+        //actionList = dfsSearch.startSearch();
         actionList.add("TURN_ON");
         /*for(String i : actionList)
         {
@@ -31,10 +33,10 @@ public class MyAgent implements Agent
     }
 
     public String nextAction(Collection<String> percepts) {
-        System.out.print("perceiving:");
+        /*System.out.print("perceiving:");
         for (String percept : percepts) {
             System.out.print("'" + percept + "', ");
-        }
+        }*/
         while(actionList.size() > 0)
         {
             String nextAction = actionList.get(actionList.size() - 1);

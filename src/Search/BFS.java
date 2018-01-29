@@ -13,7 +13,6 @@ public class BFS
     private Environment environment;
     private Queue<BFSNode> Frontier;
     private BFSNode currNode;
-    private ArrayList<String> allActions;
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
     private HashSet<State> visited;
@@ -24,9 +23,8 @@ public class BFS
         this.environment = environment;
         this.Frontier = new LinkedList<>();
         this.Frontier.add(new BFSNode(null, initialState, ""));
-        this.possibleActions = new ArrayList<>();
+        this.possibleActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
         this.actionList = new ArrayList<>();
-        this.allActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
         this.visited = new HashSet<>();
     }
 
@@ -42,11 +40,12 @@ public class BFS
         while(Frontier.size() > 0)
         {
             currNode = Frontier.poll();
-            if(visited.add(currNode.getState())){
-                possibleActions = possibleActions(currNode.getState());
-                for(String act : possibleActions)
+            possibleActions(currNode.getState(), possibleActions);
+            for(String act : possibleActions)
+            {
+                BFSNode newNode = createNewState(act, currNode);
+                if(newNode != null)
                 {
-                    BFSNode newNode = createNewState(act, currNode);
                     if(!isGoal(newNode))
                     {
                         Frontier.add(newNode);
@@ -76,57 +75,67 @@ public class BFS
 
     private BFSNode createNewState(String action, BFSNode parentNode)
     {
-        State newState = new State(parentNode.getState());
         if(action.equals("SUCK"))
         {
+            State newState = new State(parentNode.getState());
             newState.suckUpDirt();
-            return new BFSNode(parentNode, newState, "SUCK");
+            if(visited.add(newState)){
+                return new BFSNode(parentNode,new State(newState), "SUCK");
+            }
+
         }
         else if(action.equals("TURN_LEFT"))
         {
+            State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            return new BFSNode(parentNode, newState, "TURN_LEFT");
+            if(visited.add(newState)){
+                return new BFSNode(parentNode, new State(newState), "TURN_LEFT");
+            }
         }
         else if(action.equals("TURN_RIGHT"))
         {
+            State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            return new BFSNode(parentNode, newState, "TURN_RIGHT");
+            if(visited.add(newState))
+                return new BFSNode(parentNode, new State(newState), "TURN_RIGHT");
         }
         else if(action.equals("GO"))
         {
+            State newState = new State(parentNode.getState());
             newState.moveAgent();
-            return new BFSNode(parentNode, newState, "GO");
+            if(visited.add(newState))
+                return new BFSNode(parentNode, new State(newState), "GO");
         }
-        else
-            System.out.println("ADD go node");
-            return null;
+        return null;
     }
 
-    private ArrayList<String> possibleActions(State state)
+    private void possibleActions(State state, ArrayList<String> list)
     {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("TURN_LEFT");
-        list.add("TURN_RIGHT");
-        if(state.containsDirt())
+        if(state.containsDirt() && !list.contains("SUCK"))
         {
             list.add("SUCK");
         }
-        if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state))
+        else if(!state.containsDirt() && list.contains("SUCK")){
+            list.remove("SUCK");
+        }
+        if(!state.isFacingObstacle(environment.getObstacleList()) && !goingOutOfBounds(state) && !list.contains("GO"))
         {
             list.add("GO");
         }
-        return list;
+        else if ((state.isFacingObstacle(environment.getObstacleList()) || goingOutOfBounds(state)) && list.contains("GO")){
+            list.remove("GO");
+        }
     }
 
     public void getAllActionList(BFSNode goalNode)
     {
         while(goalNode.getParentNode() != null)
         {
-            System.out.println();
+            /*System.out.println();
             System.out.println(goalNode.getState().getOrientation());
-            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());
+            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());*/
             actionList.add(goalNode.getActions());
-            System.out.println(goalNode.getActions());
+            //.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
         }
     }
