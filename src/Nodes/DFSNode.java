@@ -2,7 +2,8 @@ package Nodes;
 
 import Helpers.State;
 
-public class DFSNode {
+public class DFSNode
+{
     private DFSNode parentNode;
     private State state;
     private String actions;

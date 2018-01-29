@@ -17,6 +17,7 @@ public class DFS
     private ArrayList<String> allActions;
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
+    private HashSet<State> visited;
 
     public DFS(State initialState, Environment environment)
     {
@@ -27,6 +28,7 @@ public class DFS
         this.possibleActions = new ArrayList<>();
         this.actionList = new ArrayList<>();
         this.allActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
+        this.visited = new HashSet<>();
     }
 
     public ArrayList<String> startSearch() {
@@ -45,24 +47,27 @@ public class DFS
             for(String act : possibleActions)
             {
                 DFSNode newNode = createNewState(act, currNode);
-                if(!isGoal(newNode))
+                if(newNode != null)
                 {
-                    Frontier.push(newNode);
-                }
-                else
-                {
-                    getAllActionList(newNode);
-                    return;
+                    if(!isGoal(newNode))
+                    {
+                        Frontier.add(newNode);
+                    }
+                    else
+                    {
+                        getAllActionList(newNode);
+                        return;
+                    }
                 }
             }
         }
+        System.out.println(currNode.getState().getDirtList().size());
     }
 
     private boolean isGoal(DFSNode node)
     {
-        //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
+        if(node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
         //if(node.getState().getDirtList().size() == 4)
-        if(node.getState().getAgentLocation().getX() == 5 && node.getState().getAgentLocation().getY() == 1 && node.getState().getDirtList().size() == 4)
         {
             return true;
         }
@@ -71,29 +76,36 @@ public class DFS
 
     private DFSNode createNewState(String action, DFSNode parentNode)
     {
-        State newState = new State(parentNode.getState());
         if(action.equals("SUCK"))
         {
+            State newState = new State(parentNode.getState());
             newState.suckUpDirt();
-            return new DFSNode(parentNode, newState, "SUCK");
+            if(visited.add(newState)){
+                return new DFSNode(parentNode,new State(newState), "SUCK");
+            }
         }
         else if(action.equals("TURN_LEFT"))
         {
+            State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            return new DFSNode(parentNode, newState, "TURN_LEFT");
+            if(visited.add(newState)){
+                return new DFSNode(parentNode, new State(newState), "TURN_LEFT");
+            }
         }
         else if(action.equals("TURN_RIGHT"))
         {
+            State newState = new State(parentNode.getState());
             newState.changeDirection(action);
-            return new DFSNode(parentNode, newState, "TURN_RIGHT");
+            if(visited.add(newState))
+                return new DFSNode(parentNode, new State(newState), "TURN_RIGHT");
         }
         else if(action.equals("GO"))
         {
+            State newState = new State(parentNode.getState());
             newState.moveAgent();
-            return new DFSNode(parentNode, newState, "GO");
+            if(visited.add(newState))
+                return new DFSNode(parentNode, new State(newState), "GO");
         }
-        else
-            System.out.println("ADD go node");
         return null;
     }
 

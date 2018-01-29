@@ -20,11 +20,8 @@ public class MyAgent implements Agent
 
     public void init(Collection<String> percepts) {
 		state = env.init(percepts);
-		bfsSearch = new BFS(state, env);
-        //dfsSearch = new DFS(state, env);
-		actionList = new ArrayList<>();
-		actionList = bfsSearch.startSearch();
-        //actionList = dfsSearch.startSearch();
+		//prepBFS();
+		prepDFS();
         actionList.add("TURN_ON");
         /*for(String i : actionList)
         {
@@ -44,5 +41,19 @@ public class MyAgent implements Agent
             return nextAction;
         }
         return "TURN_OFF";
+    }
+
+    private void prepDFS()
+    {
+        dfsSearch = new DFS(state, env);
+        actionList = new ArrayList<>();
+        actionList = dfsSearch.startSearch();
+    }
+
+    private void prepBFS()
+    {
+        bfsSearch = new BFS(state, env);
+        actionList = new ArrayList<>();
+        actionList = bfsSearch.startSearch();
     }
 }
