@@ -4,6 +4,7 @@ import Helpers.Actions;
 import Helpers.Environment;
 import Helpers.State;
 import Nodes.BFSNode;
+import Nodes.DFSNode;
 
 import java.util.*;
 
@@ -11,8 +12,8 @@ public class DFS
 {
     private State initialState;
     private Environment environment;
-    private Stack<BFSNode> Frontier;
-    private BFSNode currNode;
+    private Stack<DFSNode> Frontier;
+    private DFSNode currNode;
     private ArrayList<String> allActions;
     private ArrayList<String> possibleActions;
     private ArrayList<String> actionList;
@@ -22,7 +23,7 @@ public class DFS
         this.initialState = initialState;
         this.environment = environment;
         this.Frontier = new Stack<>();
-        this.Frontier.add(new BFSNode(null, initialState, ""));
+        this.Frontier.add(new DFSNode(null, initialState, ""));
         this.possibleActions = new ArrayList<>();
         this.actionList = new ArrayList<>();
         this.allActions = new ArrayList<>(Arrays.asList(Actions.TURN_LEFT, Actions.TURN_RIGHT, Actions.GO, Actions.SUCK));
@@ -43,7 +44,7 @@ public class DFS
             possibleActions = possibleActions(currNode.getState());
             for(String act : possibleActions)
             {
-                BFSNode newNode = createNewState(act);
+                DFSNode newNode = createNewState(act, currNode);
                 if(!isGoal(newNode))
                 {
                     Frontier.push(newNode);
@@ -57,41 +58,43 @@ public class DFS
         }
     }
 
-    private boolean isGoal(BFSNode node)
+    private boolean isGoal(DFSNode node)
     {
         //if (node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        if(node.getState().getDirtList().size() == 5)
+        //if(node.getState().getDirtList().size() == 4)
+        if(node.getState().getAgentLocation().getX() == 5 && node.getState().getAgentLocation().getY() == 1 && node.getState().getDirtList().size() == 4)
         {
             return true;
         }
         return false;
     }
 
-    private BFSNode createNewState(String action)
+    private DFSNode createNewState(String action, DFSNode parentNode)
     {
-        State newState = new State(currNode.getState());
+        State newState = new State(parentNode.getState());
         if(action.equals("SUCK"))
         {
             newState.suckUpDirt();
-            return new BFSNode(currNode, newState, "SUCK");
+            return new DFSNode(parentNode, newState, "SUCK");
         }
         else if(action.equals("TURN_LEFT"))
         {
             newState.changeDirection(action);
-            return new BFSNode(currNode, newState, "TURN_LEFT");
+            return new DFSNode(parentNode, newState, "TURN_LEFT");
         }
         else if(action.equals("TURN_RIGHT"))
         {
             newState.changeDirection(action);
-            return new BFSNode(currNode, newState, "TURN_RIGHT");
+            return new DFSNode(parentNode, newState, "TURN_RIGHT");
         }
         else if(action.equals("GO"))
         {
             newState.moveAgent();
-            return new BFSNode(currNode, newState, "GO");
+            return new DFSNode(parentNode, newState, "GO");
         }
         else
-            return null;
+            System.out.println("ADD go node");
+        return null;
     }
 
     private ArrayList<String> possibleActions(State state)
@@ -110,11 +113,14 @@ public class DFS
         return list;
     }
 
-    public void getAllActionList(BFSNode goalNode)
+    public void getAllActionList(DFSNode goalNode)
     {
         System.out.println("WE WON");
         while(goalNode.getParentNode() != null)
         {
+            System.out.println();
+            System.out.println(goalNode.getState().getOrientation());
+            System.out.println(goalNode.getState().getAgentLocation().getX() + "," + goalNode.getState().getAgentLocation().getY());
             actionList.add(goalNode.getActions());
             System.out.println(goalNode.getActions());
             goalNode = goalNode.getParentNode();
