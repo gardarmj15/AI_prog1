@@ -66,8 +66,9 @@ public class DFS
 
     private boolean isGoal(DFSNode node)
     {
-        if(node.getState().getDirtList().size() == 0 && node.getState().getAgentLocation() == environment.getHome())
-        //if(node.getState().getDirtList().size() == 4)
+        if(node.getState().getDirtList().size() == 0
+                && node.getState().getAgentLocation().getX() == environment.getHome().getX()
+                && node.getState().getAgentLocation().getY() == environment.getHome().getY())
         {
             return true;
         }
